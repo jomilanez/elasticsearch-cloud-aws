@@ -25,6 +25,7 @@ import com.amazonaws.auth.*;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.S3ClientOptions;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.ElasticsearchIllegalArgumentException;
 import org.elasticsearch.common.collect.Tuple;
@@ -124,6 +125,12 @@ public class InternalAwsS3Service extends AbstractLifecycleComponent<AwsS3Servic
             );
         }
         client = new AmazonS3Client(credentials, clientConfiguration);
+
+		String pathStyleAccess = componentSettings.get("path_style_access");
+
+		if ("true".equals(pathStyleAccess)) {
+			client.setS3ClientOptions(new S3ClientOptions().withPathStyleAccess(true));
+		}
 
         if (endpoint != null) {
             client.setEndpoint(endpoint);
